@@ -1,3 +1,6 @@
+#ifndef I2C_H
+#define I2C_H
+
 #define _I2C_NUMBER(num) I2C_NUM_##num
 #define I2C_NUMBER(num) _I2C_NUMBER(num)
 
@@ -46,3 +49,5 @@
 #define ACK_CHECK_DIS 0x0          /*!< I2C master will not check ack from slave */
 #define ACK_VAL 0x0                /*!< I2C ack value */
 #define NACK_VAL 0x1               /*!< I2C nack value */
+
+#endif
