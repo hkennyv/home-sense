@@ -27,7 +27,7 @@ SemaphoreHandle_t print_mux = NULL;
  * --------|--------------------------|----------------------|--------------------|------|
  *
  */
-static esp_err_t i2c_master_read_slave(i2c_port_t i2c_num, uint8_t *data_rd, size_t size)
+esp_err_t i2c_master_read_slave(i2c_port_t i2c_num, uint8_t *data_rd, size_t size)
 {
     if (size == 0)
     {
@@ -58,7 +58,7 @@ static esp_err_t i2c_master_read_slave(i2c_port_t i2c_num, uint8_t *data_rd, siz
  * --------|---------------------------|----------------------|------|
  *
  */
-static esp_err_t i2c_master_write_slave(i2c_port_t i2c_num, uint8_t *data_wr, size_t size)
+esp_err_t i2c_master_write_slave(i2c_port_t i2c_num, uint8_t *data_wr, size_t size)
 {
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
@@ -71,7 +71,7 @@ static esp_err_t i2c_master_write_slave(i2c_port_t i2c_num, uint8_t *data_wr, si
 }
 
 /**
- * @brief test code to operate on BH1750 sensor
+ * @brief test code to operate on BME280 sensor
  *
  * 1. set operation mode(e.g One time L-resolution mode)
  * _________________________________________________________________
@@ -83,13 +83,13 @@ static esp_err_t i2c_master_write_slave(i2c_port_t i2c_num, uint8_t *data_wr, si
  * | start | slave_addr + rd_bit + ack | read 1 byte + ack  | read 1 byte + nack | stop |
  * --------|---------------------------|--------------------|--------------------|------|
  */
-static esp_err_t i2c_master_sensor_test(i2c_port_t i2c_num, uint8_t *data_h, uint8_t *data_l)
+esp_err_t i2c_master_sensor_test(i2c_port_t i2c_num, uint8_t *data_h, uint8_t *data_l)
 {
     int ret;
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
-    i2c_master_write_byte(cmd, BH1750_SENSOR_ADDR << 1 | WRITE_BIT, ACK_CHECK_EN);
-    i2c_master_write_byte(cmd, BH1750_CMD_START, ACK_CHECK_EN);
+    i2c_master_write_byte(cmd, BME280_SENSOR_ADDR << 1 | WRITE_BIT, ACK_CHECK_EN);
+    i2c_master_write_byte(cmd, 0xD0, ACK_CHECK_EN);
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
@@ -100,7 +100,7 @@ static esp_err_t i2c_master_sensor_test(i2c_port_t i2c_num, uint8_t *data_h, uin
     vTaskDelay(30 / portTICK_RATE_MS);
     cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
-    i2c_master_write_byte(cmd, BH1750_SENSOR_ADDR << 1 | READ_BIT, ACK_CHECK_EN);
+    i2c_master_write_byte(cmd, BME280_SENSOR_ADDR << 1 | READ_BIT, ACK_CHECK_EN);
     i2c_master_read_byte(cmd, data_h, ACK_VAL);
     i2c_master_read_byte(cmd, data_l, NACK_VAL);
     i2c_master_stop(cmd);
@@ -112,7 +112,7 @@ static esp_err_t i2c_master_sensor_test(i2c_port_t i2c_num, uint8_t *data_h, uin
 /**
  * @brief i2c master initialization
  */
-static esp_err_t i2c_master_init(void)
+esp_err_t i2c_master_init(void)
 {
     int i2c_master_port = I2C_MASTER_NUM;
     i2c_config_t conf;
@@ -165,7 +165,7 @@ static esp_err_t i2c_master_init(void)
 //         else if (ret == ESP_OK)
 //         {
 //             printf("*******************\n");
-//             printf("TASK[%d]  MASTER READ SENSOR( BH1750 )\n", task_idx);
+//             printf("TASK[%d]  MASTER READ SENSOR( BME280 )\n", task_idx);
 //             printf("*******************\n");
 //             printf("data_h: %02x\n", sensor_data_h);
 //             printf("data_l: %02x\n", sensor_data_l);

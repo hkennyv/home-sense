@@ -11,7 +11,9 @@
 #include "esp_system.h"
 #include "nvs_flash.h"
 
+#include "bme280.h"
 #include "gpio.h"
+#include "i2c.h"
 #include "sys.h"
 #include "wifi.h"
 
@@ -25,6 +27,8 @@ void app_main(void)
     wifi_init();
     start_mdns_service();
 
+    ESP_ERROR_CHECK(i2c_master_init());
+
     uint8_t toggle = 0;
     // for (int i = 10; i >= 0; i--)
     for (;;)
@@ -34,6 +38,7 @@ void app_main(void)
         printf("howdy!\n");
         gpio_set_level(GPIO_OUTPUT_1, toggle);
         gpio_set_level(GPIO_OUTPUT_0, !toggle);
+        bme280_read_id();
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 
