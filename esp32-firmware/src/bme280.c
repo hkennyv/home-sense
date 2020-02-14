@@ -55,11 +55,12 @@ esp_err_t bme280_read_id(void)
     i2c_master_start(cmd);
     i2c_master_write_byte(cmd, (BME280_SENSOR_ADDR << 1) | WRITE_BIT, ACK_CHECK_EN);
     i2c_master_write_byte(cmd, 0xD0, ACK_CHECK_EN);
-    i2c_master_start(cmd);
-    i2c_master_write_byte(cmd, (BME280_SENSOR_ADDR << 1) | READ_BIT, ACK_CHECK_EN);
     i2c_master_stop(cmd);
-    i2c_master_read_byte(cmd, &data, NACK_VAL);
-    i2c_master_stop(cmd);
+    // i2c_master_start(cmd);
+    // i2c_master_write_byte(cmd, (BME280_SENSOR_ADDR << 1) | READ_BIT, ACK_CHECK_EN);
+    // i2c_master_stop(cmd);
+    // i2c_master_read_byte(cmd, &data, NACK_VAL);
+    // i2c_master_stop(cmd);
     esp_err_t ret = i2c_master_cmd_begin(I2C_MASTER_NUM, cmd, 5000 / portTICK_RATE_MS);
     if (ret == ESP_OK)
     {
@@ -67,7 +68,9 @@ esp_err_t bme280_read_id(void)
     }
     else
     {
-        printf("error in i2c. code: %d\n", ret);
+        char *err_name = esp_err_to_name(ret);
+
+        printf("error in i2c. code: [%d] %s\n", ret, err_name);
     }
     i2c_cmd_link_delete(cmd);
     return ret;
