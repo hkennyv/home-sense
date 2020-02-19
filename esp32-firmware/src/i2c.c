@@ -120,14 +120,17 @@ esp_err_t i2c_master_init(void)
 
     conf.sda_io_num = I2C_MASTER_SDA_IO;
     conf.scl_io_num = I2C_MASTER_SCL_IO;
-    // conf.sda_pullup_en = GPIO_PULLUP_DISABLE;
-    // conf.scl_pullup_en = GPIO_PULLUP_DISABLE;
-    conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
-    conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
 
-    // conf.master.clk_speed = I2C_MASTER_FREQ_HZ;
-    // NOTE: IMPORTANT that this is 100khz and NOT I2C_MASTER_FREQ_HZ
-    conf.master.clk_speed = 100000;
+    // BME280 breakout board has built in pullups
+    conf.sda_pullup_en = GPIO_PULLUP_DISABLE;
+    conf.scl_pullup_en = GPIO_PULLUP_DISABLE;
+
+    // NOTE: ONLY use the standard/fast/high speed mode specs. if you use
+    // something else here, the device will not respond!!
+    //  standard    - 100khz
+    //  fast        - 400khz
+    //  high speed  - 1mb
+    conf.master.clk_speed = 1000000;
 
     i2c_param_config(i2c_master_port, &conf);
     printf("I2C init\n");
