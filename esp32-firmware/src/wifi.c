@@ -58,6 +58,7 @@ void wifi_init(void)
     ESP_ERROR_CHECK(esp_wifi_start());
     ESP_LOGI(TAG, "Waiting for wifi");
     xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, false, true, portMAX_DELAY);
+    printf("WIFI init success\n");
 }
 
 void start_mdns_service()
@@ -77,4 +78,5 @@ void start_mdns_service()
     mdns_instance_name_set(ESP_INSTANCE_NAME);
     ESP_LOGI(TAG, "Hostname set: %s\n", ESP_HOSTNAME);
     ESP_LOGI(TAG, "Instance name set: %s\n", ESP_INSTANCE_NAME);
+    printf("MDN init success\n");
 }

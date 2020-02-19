@@ -50,27 +50,32 @@ esp_err_t bme280_read_id(void)
      * power-on-reset
      */
     uint8_t data = 0;
+    uint8_t reg_addr = 0xD0;
+
+
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
 
-    i2c_master_start(cmd);
-    i2c_master_write_byte(cmd, (BME280_SENSOR_ADDR << 1) | WRITE_BIT, ACK_CHECK_EN);
-    i2c_master_write_byte(cmd, 0xD0, ACK_CHECK_EN);
-    i2c_master_stop(cmd);
-    // i2c_master_start(cmd);
-    // i2c_master_write_byte(cmd, (BME280_SENSOR_ADDR << 1) | READ_BIT, ACK_CHECK_EN);
-    // i2c_master_stop(cmd);
-    // i2c_master_read_byte(cmd, &data, NACK_VAL);
-    // i2c_master_stop(cmd);
+
+    i2c_master_start(cmd);                                                              // START
+    i2c_master_write_byte(cmd, (BME280_SENSOR_ADDR << 1) | WRITE_BIT, ACK_CHECK_EN);    // WRITE
+    i2c_master_write_byte(cmd, reg_addr, ACK_CHECK_EN);                                 // reg_addr
+
+    i2c_master_start(cmd);                                                              // START
+    i2c_master_write_byte(cmd, (BME280_SENSOR_ADDR << 1) | READ_BIT, ACK_CHECK_EN);     // READ
+    i2c_master_read_byte(cmd, &data, NACK_VAL);                                         // data byte
+    i2c_master_stop(cmd);                                                               // STOP
+
     esp_err_t ret = i2c_master_cmd_begin(I2C_MASTER_NUM, cmd, 5000 / portTICK_RATE_MS);
+
     if (ret == ESP_OK)
     {
-        printf("hardware id: %d\n", data);
+        printf("hardware id: 0x%x\n", data);
     }
     else
     {
-        char *err_name = esp_err_to_name(ret);
+        const char *err_name = esp_err_to_name(ret);
 
-        printf("error in i2c. code: [%d] %s\n", ret, err_name);
+        printf("error in i2c. code: [0x%x] %s\n", ret, err_name);
     }
     i2c_cmd_link_delete(cmd);
     return ret;

@@ -18,9 +18,11 @@ void gpio_config_init()
     // disable pull-down mode and pull-up mode
     io_conf.pull_down_en = 0;
     io_conf.pull_up_en = 0;
+
     // configure GPIO with io_conf
     gpio_config(&io_conf);
 
     // turn on blue LED on init success
     gpio_set_level(GPIO_OUTPUT_1, 1);
+    printf("GPIO init success\n");
 }

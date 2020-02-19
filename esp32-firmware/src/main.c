@@ -16,29 +16,28 @@
 #include "i2c.h"
 #include "sys.h"
 #include "wifi.h"
+#include "scanner.h"
 
 void app_main(void)
 {
     sys_print_info();
 
     // init
-    gpio_config_init();
     nvs_flash_init();
     wifi_init();
+    gpio_config_init();
     start_mdns_service();
-
     ESP_ERROR_CHECK(i2c_master_init());
+	// task_i2cscanner();
 
     uint8_t toggle = 0;
-    // for (int i = 10; i >= 0; i--)
+
     for (;;)
     {
-        // printf("Restarting in %d seconds...\n", i);
+		bme280_read_id();
         toggle ^= 0x01;
-        printf("howdy!\n");
         gpio_set_level(GPIO_OUTPUT_1, toggle);
         gpio_set_level(GPIO_OUTPUT_0, !toggle);
-        bme280_read_id();
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 
